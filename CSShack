@@ -1,0 +1,64 @@
+一、Webkit内核CSS hack（Chrome、Safari、Opera）
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .demo { /* 这里写只在Webkit内核的浏览器下起作用的样式 */ }
+}
+
+二、Firefox CSS hack
+
+@-moz-document url-prefix(){
+  .demo {  /*  这里写写只在firefox中起作用的样式  */  }
+}
+
+三、IE8/9/10/11 CSS hack
+
+@media screen\0 {
+  .demo{  /*这里写在IE 8 9 10 11下起作用的样式  */   }
+}
+
+四、IE6/7/8 CSS hack
+
+@media \0screen\,screen\9 {
+  .demo{  /* 这里写在IE 6 7 8 下起作用的样式 */  }  
+}
+
+五、IE9/10 CSS hack
+
+    IE9/10能识别CSS属性值后面的\9\0,所以想要在IE9/10下表现出来的样式，可以在后面加\9\0即可 此hack有一个问题，即设置的所有属性在IE7下都不起作用，可以使用 IE6/7 的hack来修复一下
+
+{
+  display: none\9\0;
+}
+
+六、IE6/7 CSS hack
+
+    注：IE6/7能识别CSS属性前面的 * ,所以想要在IE6/7下表现出来的样式，可以在前面面加 * 即可
+
+{
+  *display:none;
+}
+
+七、IE8 CSS hack
+
+@media \0screen\,screen\9 {
+   .demo{ /* 这里写在IE8 下起作用的样式 */ }
+}
+
+八、IE7 CSS hack
+
+    注：IE7的单独的CSS hack 必须结合着IE6的hack使用
+
+{*color:red;_color:green;}
+
+九、IE6 CSS hack
+
+{_color:green;}
+
+十、IE10+ CSS hack
+
+/* IE10+ css hack */
+.demo{  color:green;}
+
+@media screen and (-ms-high-contrast:active),(-ms-high-contrast: none) {  
+    .demo { color: red; }
+}
