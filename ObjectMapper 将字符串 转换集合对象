@@ -1,0 +1,17 @@
+直接上代码：
+
+//待转换的字符串
+
+String info = "[{\"dayOfWeek\":\"4\"}，{\"dayOfWeek\":\"5\"}]";
+
+ 
+
+ObjectMapper mapper = new ObjectMapper();
+
+//定义需要返回的集合泛型
+
+JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, MonitorInfo.class);
+
+//类型转换
+
+List<MonitorInfo> list = mapper.readValue(info,javaType);
