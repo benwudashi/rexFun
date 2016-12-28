@@ -1,0 +1,25 @@
+SVN配置，例如，对于Maven JavaWeb项目，应该排除 *.class、.classpath、.project、classes、target等文件在SVN的控制范围。设置方法：
+
+      Eclipse菜单-Preferences-Team-Ignored Resources，新建如下Pattern：
+
+        *.class
+
+        target
+
+        */target/*
+
+        .settings
+
+        */.settings/*
+
+        tmp
+
+        */tmp/*
+
+        classes
+
+        */classes/*
+
+        .project
+
+        .classpath
