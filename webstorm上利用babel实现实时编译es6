@@ -1,0 +1,15 @@
+一.新建一个空项目，settings => Languages&FrameWorks => javascript => javascript language version “ECMAScript6” 让IDE识别es6语法
+二.ALT+F12 然后打开IDE的Terminal，安装babel-cli“npm install --save-dev babel-cli”
+三.添加webStorm的文件观察器，settings => Tools => File Watchers => + Babel, 
+  1.watcher settings 中 program输入项目所在目录的node_modules\.bin\babel,注意如果是windows系统则应选择babel.cmd，如“D:\WebstormProjects\rexFun01\node_modules\.bin\babel.cmd”
+  2.arguments中输入可不做改变，如“$FilePathRelativeToProjectRoot$ --out-dir dist --source-maps  --presets es2015”
+  3.output paths to refresh中输入可不做改变 ，如"dist\$FileDirRelativeToProjectRoot$\$FileNameWithoutExtension$.js:dist\$FileDirRelativeToProjectRoot$\$FileNameWithoutExtension$.js.map"
+四.在npm安装babel的ES6的preset"npm install --save-dev babel-preset-es2015"
+五.新建babel的配置文件， 在根目录下新建一个.babelrc文件（就是babel在当前项目的配置文件），其内容如下：
+  {
+    "presets": [
+     "es2015"
+    ]
+  }
+  
+  ^_^!,好啦，接下来你编写的es6就会被webstorm实时的转为es5了
