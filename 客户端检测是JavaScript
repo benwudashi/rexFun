@@ -1,0 +1,158 @@
+客户端检测是JavaScript开发中最受争议的一个话题，由于浏览器之间存在差别，通常需要根据不同的浏览器的能力分别编写不同的代码。有不少客户端检测方法，但下列是经常使用的。
+
+　　1.能力检测：编写代码之前先检测特定浏览器的能力。例如，脚本在调用某个函数之前，可能要检测该函数是否存在。这种检测方法将开发人员从考虑具体的浏览器类型和版本中解放出来，让他们先把注意力集中到相应的能力是否存在上。能力检测无法精准的检测特定的浏览器和版本
+
+　　2.怪癖检测：怪癖实际上是浏览器实现中的bug，例如早期的webkit中就存在一个怪癖，即它会在for-in循环中返回被隐藏的属性，怪癖检测通常涉及到运行一小段代码，然后确定浏览器是否存在某个怪癖，由于怪癖检测与能力检测先比效率比更低，因此一个只在某个怪癖会干扰脚本运行的情况下使用。怪癖检测无法精准的检测特定的浏览器和版本。
+
+　　3.用户代理检测：用过检测代理字符串来识别浏览器。用户代理来识别浏览器版本。用户代理字符串中包含大量与浏览器有关的信息，包括浏览器、平台、操作系统及浏览器版本。用户代理字符串有过一段相当长的发展历史，在此期间，浏览器提供商试图通过在用户代理检测需要特殊的技巧，特别是要注意Opera会隐瞒其用户代理字符串情况。即便如此，用过用户代理字符串任然能够检测出浏览器所用的呈现引擎以及所在的平台，包括移动设备和游戏系统。
+
+在决定使用哪种客户端检测方法时，一般优先考虑使用能力检测。怪癖检测是确定应该如何处理代码的第二选择。而用户代理字符串是最后一种方案，因为这种方法对用户代理字符串具有很强的依赖性。
+
+下面是检测用户代理字符串的完整代码，很长但也很有用
+
+var client = function() {
+　　var engine = {
+　　　　ie: 0,
+　　　　gecko: 0,
+　　　　webkit: 0,
+　　　　khtml: 0,
+　　　　opera: 0,
+　　　　ver: null
+　　};
+　　var browser = {
+　　　　ie: 0,
+　　　　firefox: 0,
+　　　　safari: 0,
+　　　　konq: 0,
+　　　　opera: 0,
+　　　　chrome: 0,
+　　　　ver: null
+　　}
+　　var system = {
+　　　　win: false,
+　　　　mac: false,
+　　　　x11: false,
+　　　　iphone: false,
+　　　　ipod: false,
+　　　　ipad: false,
+　　　　ios: false,
+　　　　android: false,
+　　　　nokiaN: false,
+　　　　winMobile: false,
+　　　　wii: false,
+　　　　ps: false
+　　}
+　　var ua = navigator.userAgent;
+　　//浏览器与呈现引擎检测，呈现引擎于浏览器分别是opera(opera),webkit(chrome,safari),khtml(konq),gecko(firefox),ie(ie)
+　　if(window.opera) {
+　　　　engine.ver = browser.ver = window.opera.version();
+　　　　engine.opera = browser.opera = parseFloat(engine.ver);
+　　} else if(/AppleWebkit\/(\S+)/.test(ua)) {
+　　　　engine.ver = RegExp.$1;
+　　　　engine.webkit = parseFloat(engine.ver);
+　　　　//检查是Chrome还是safari
+　　　　if(/Chrome\/(\S+)/.test(ua)) {
+　　　　　　browser.ver = RegExp.$1;
+　　　　　　browser.chrome = parseFloat(browser.ver);
+　　　　} else if(/Version\/(\S+)/.test(ua)) {
+　　　　browser.ver = RegExp.$1;
+　　　　browser.safari = parseFloat(browser.ver);
+　　　　} else {
+　　　　　　//safari低版本有确认不了版本号的情况，此处应该使用webkit版本近似的确定safari版本
+　　　　　　var safariVersion = 1;
+　　　　　　if(engine.webkit < 100) {
+　　　　　　　　safariVersion = 1;
+　　　　　　} else if(engine.webkit < 312) {
+　　　　　　　　safariVersion = 1.2;
+　　　　　　} else if(engine.webkit < 412) {
+　　　　　　　　safariVersion = 1.3;
+　　　　　　} else {
+　　　　　　　　safariVersion = 2;
+　　　　　　}
+　　　　　　browser.safari = browser.ver = safariVersion;
+
+　　　　}
+　　} else if(/KHTML\/(\S+)/.test(ua) || /Konqueror\/([^;]+)/.test(ua)) {
+　　　　engine.ver = browser.ver = RegExp.$1;
+　　　　engine.khtml = browser.khtml = parseFloat(engine.ver);
+　　} else if(/rv:([^\)]+)\) Gecko\/\d{8}/.test(ua)) {
+　　engine.ver = RegExp.$1;
+　　engine.gecko = parseFloat(engine.ver);
+　　if(/Firefox\/(\S+)/.test(ua)) {
+　　　　browser.ver = RegExp.$1;
+　　　　browser.firefox = parseFloat(browser.ver);
+　　}
+　　} else if(/MSIE ([^;]+)/.test(ua)) {
+　　　　engine.ver = browser.ver = RegExp.$1;
+　　　　engine.ie = browser.ie = parseFloat(engine.ver);
+　　}
+　　//检测平台,平台有：Windows,Mac,Linux分别对应的字符串是,Win **,Mac,Linux||x11
+　　var p = navigator.platform;
+　　system.win = p.indexOf("Win") == 0;
+　　system.mac = p.indexOf("Mac") == 0;
+　　system.x11 = (p == "x11") || (p.indexOf("Linux") == 0);
+　　//检查Windows操作系统
+　　if(system.win) {
+　　　　if(/Win(?:dows )?([^do]{2})\s?(\d+\.\d+)?/.test(ua)) {
+　　　　　　if(RegExp.$1 == "NT") {
+　　　　　　　　switch(RegExp.$2) {
+　　　　　　　　　　case "5.0":
+　　　　　　　　　　　　system.win = "2000";
+　　　　　　　　　　　　break;
+　　　　　　　　　　case "5.1":
+　　　　　　　　　　　　system.win = "XP";
+　　　　　　　　　　　　break;
+　　　　　　　　　　case "6.0":
+　　　　　　　　　　　　system.win = "Vista";
+　　　　　　　　　　case "6.1":
+　　　　　　　　　　　　system.win = '7';
+　　　　　　　　　　　　break;
+　　　　　　　　　　default:
+　　　　　　　　　　　　system.win = "NT";
+　　　　　　　　　　　　break;
+　　　　　　　　}
+　　　　　　} else if(RegExp.$1 == "9x") {
+　　　　　　system.win = "ME";
+　　　　　　} else {
+　　　　　　system.win = RegExp.$1;
+　　　　　　}
+　　　　}　
+　　}
+　　//移动设备
+　　system.iphone = ua.indexOf("iPhone") > -1;
+　　system.ipod = ua.indexOf("iPod") > -1;
+　　system.ipad = ua.indexOf("iPad") > -1;
+　　system.nokiaN = ua.indexOf("NokiaN") > -1;　　
+　　//windows mobile
+　　if(system.win == "CE") {
+　　　　system.winMobile = system.win;
+　　} else if(system.win == "Ph") {
+　　　　if(/Windows Phone OS (\d+.\d+)/.test(ua)) {
+　　　　　　system.win = "Phone";
+　　　　　　system.winMobile = parseFloat(RegExp.$1);
+　　　　}
+　　}
+　　//检测IOS版本
+　　if(system.mac && ua.indexOf("Mobile") > -1) {
+　　　　if(/CPU (?:iPhone )?OS (\d+_\d+)/.test(ua)) {
+　　　　　　system.ios = parseFloat(RegExp.$1.repeat("_", "."));
+　　　　} else {
+　　　　　　system.ios = 2;
+　　　　}
+　　}
+　　//检测Android版本
+　　if(/Android (\d+\.\d+)/.test(ua)) {
+　　　　system.android = parseFloat(RegExp.$1);
+　　}
+　　//游戏系统
+　　system.wii = ua.indexOf("Wii") > -1;
+　　system.ps = /playstation/i.test(ua);
+　　return {
+　　　　engine: engine,
+　　　　browser: browser,
+　　　　system: system
+　　};
+}();
+
+原文网址http://www.cnblogs.com/MyZsy/p/6294532.html
+内容出处javascript高级程序设计第三版 第九章“客户端监测”
